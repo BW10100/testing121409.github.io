@@ -1,0 +1,63 @@
+ public static List<int> GenerateRandom(int count, int min, int max, int seed)
+        {
+            Random random = new Random(seed);
+            HashSet<int> candidates = new HashSet<int>();
+            for (int top = max - count; top < max; top++)
+            {
+                if (!candidates.Add(random.Next(min, top + 1)))
+                {
+                    candidates.Add(top);
+                }
+            }
+            List<int> result = candidates.ToList();
+            for (int i = result.Count - 1; i > 0; i--)
+            {
+                int k = random.Next(i + 1);
+                int tmp = result[k];
+                result[k] = result[i];
+                result[i] = tmp;
+            }
+            return result;
+        }
+        public static string SorEncrypt(string data, string key)
+        {
+            Console.WriteLine();
+            var HexListData = new List<string>(BitConverter.ToString(Encoding.ASCII.GetBytes(data)).Split('-')).ToList();
+            var HexListKey = new List<string>(BitConverter.ToString(Encoding.ASCII.GetBytes(key)).Split('-')).ToList();
+            var alg = new List<string>();
+            foreach (var XorKey in HexListKey)
+            {
+                alg = (from i in GenerateRandom(256,0,256,int.Parse(XorCompare, NumberStyles.HexNumber))select i.ToString("X2")).ToList();
+                string XorCompare = XorKey;
+                for (int i = 0; i < HexListData.Count; i++)
+                {
+                    XorCompare = alg[int.Parse(XorCompare, NumberStyles.HexNumber)];
+                    HexListData[i] = (int.Parse(XorCompare, NumberStyles.HexNumber) ^ int.Parse(HexListData[i], NumberStyles.HexNumber)).ToString("X2");
+                }
+            }
+            return String.Join("", HexListData);
+        }
+        public static string SorDecrypt(string Data, string key)
+        {
+            var DataLenght = Data.Length / 2;
+            var HexListData = new List<string>(Enumerable.Range(0, Data.Length / 2).Select(i => Data.Substring(i * 2, 2)));
+            var HexListKey = new List<string>(BitConverter.ToString(Encoding.ASCII.GetBytes(key)).Split('-')).ToList();
+            var alg = new List<string>();
+            foreach (var XorKey in HexListKey)
+            {
+                string XorCompare = XorKey;
+                for (int i = 0; i < HexListData.Count; i++)
+                {
+                    XorCompare = alg[int.Parse(XorCompare, NumberStyles.HexNumber)];
+                    HexListData[i] = (int.Parse(XorCompare, NumberStyles.HexNumber) ^ int.Parse(HexListData[i], NumberStyles.HexNumber)).ToString("X2");
+                }
+
+            }
+            var Empty = String.Empty;
+            foreach (var i in HexListData)
+            {
+                Empty +=
+                Char.ToString((char)int.Parse(i, NumberStyles.HexNumber));
+            }
+            return Empty;
+        }
